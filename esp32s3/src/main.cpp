@@ -1,38 +1,45 @@
 #include <Arduino.h>
-#include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "UserConfig.h"
-#include "UartMsgDeal.h"
+#include "uart/UartMsgDeal.h"
 
 void welcome();
-void platform_init();
-static void task_init(void* p_arg);
 
-void setup()
-{
+void hardware_default_init();
+
+void platform_init();
+
+void task_init(void *p_arg);
+
+void setup() {
     // write your initialization code here
+    hardware_default_init();
     /* 版本信息 */
     welcome();
     /* 创建启动任务 */
-    UartMsgDeal uartMsgDeal;
-    uartMsgDeal.uartMsgTaskInitial();
-    // xTaskCreate(task_init, "init task", 280, nullptr, 4, nullptr);
+    xTaskCreate(task_init, "init task", 280, nullptr, 4, nullptr);
 
     /* 启动调度，开始执行任务 */
-    // vTaskStartScheduler();
+     vTaskStartScheduler();
 }
 
-void loop()
-{
+void loop() {
     // write your code here
 }
 
-void welcome()
-{
-    printf("\r\n");
-    printf("\r\n");
-    printf("\033[1;32m");
-    printf_P("RYMCU Esp32 SDK");
+
+void hardware_default_init() {
+    // 初始化串口
+    Serial.setRxBufferSize(RD_BUF_SIZE * 2);
+    Serial.setTxBufferSize(BUF_SIZE * 2);
+    Serial.begin(UART_PROTOCOL_BAUD_RATE);
+}
+
+void welcome() {
+    Serial.print("\r\n");
+    Serial.print("\r\n");
+    Serial.print("\033[1;32m");
+    Serial.println("RYMCU Esp32 SDK");
 
 
     // 输出 CPU 信息
@@ -93,15 +100,13 @@ void welcome()
     Serial.print("\r\n");
 }
 
-void platform_init()
-{
+void platform_init() {
 }
 
-static void task_init(void* p_arg)
-{
+void task_init(void *p_arg) {
 #if UART_PROTOCOL_DEBUG
     // 初始化 UART 调试串口信息处理程序
-    UartMsgDeal uartMsgDeal;
-    uartMsgDeal.uartMsgTaskInitial();
+//    UartMsgDeal uartMsgDeal;
+//    uartMsgDeal.begin();
 #endif
 }
