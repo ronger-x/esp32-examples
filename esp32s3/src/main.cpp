@@ -20,11 +20,8 @@ void setup()
     /* 版本信息 */
     welcome();
     /* 创建启动任务 */
-    // xTaskCreateUniversal(task_init, "task_init", ARDUINO_SERIAL_EVENT_TASK_STACK_SIZE, nullptr,
-    //                      ARDUINO_SERIAL_EVENT_TASK_PRIORITY, nullptr, ARDUINO_SERIAL_EVENT_TASK_RUNNING_CORE);
-
-    /* 启动调度，开始执行任务 */
-    // vTaskStartScheduler();
+    xTaskCreateUniversal(task_init, "task_init", ARDUINO_SERIAL_EVENT_TASK_STACK_SIZE, nullptr,
+                         ARDUINO_SERIAL_EVENT_TASK_PRIORITY, nullptr, ARDUINO_SERIAL_EVENT_TASK_RUNNING_CORE);
 }
 
 void loop()
