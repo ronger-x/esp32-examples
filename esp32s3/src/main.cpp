@@ -107,11 +107,9 @@ void platform_init()
 
 void task_init(void* p_arg)
 {
-    UBaseType_t watermark = uxTaskGetStackHighWaterMark(nullptr);
-    Serial.printf("Stack HWM: %u\n", watermark);
-    while (true)
-    {
-        Serial.println("Hello World!");
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+    // 初始化 Wi-Fi
+#ifdef WIFI_ENABLED
+#endif
+
+    vTaskDelete(nullptr);
 }

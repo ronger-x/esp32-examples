@@ -34,6 +34,7 @@ void UartMsgDeal::receiveDataTask()
     {
         toRead = (available > RD_BUF_SIZE) ? RD_BUF_SIZE : available;
         toWrite = serial_.readBytes(buf, toRead);
+        //TODO: 处理数据
         written += serial_.write(buf, toWrite);
         available = serial_.available();
     }
