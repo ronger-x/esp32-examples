@@ -1,9 +1,15 @@
 #include <Arduino.h>
 #include <freertos/task.h>
+#include <nvs.h>
+#include <nvs_flash.h>
+#include <wifi/WIFIHandle.h>
+
 #include "UserConfig.h"
 #include "uart/UartMsgDeal.h"
 
 UartMsgDeal uartMsgDeal(Serial);
+
+WIFIHandle wifiHandle;
 
 void welcome();
 
@@ -20,18 +26,27 @@ void setup()
     /* 版本信息 */
     welcome();
     /* 创建启动任务 */
-    xTaskCreateUniversal(task_init, "task_init", ARDUINO_SERIAL_EVENT_TASK_STACK_SIZE, nullptr,
+    xTaskCreateUniversal(task_init, "task_init", ARDUINO_SERIAL_EVENT_TASK_STACK_SIZE * 2, nullptr,
                          ARDUINO_SERIAL_EVENT_TASK_PRIORITY, nullptr, ARDUINO_SERIAL_EVENT_TASK_RUNNING_CORE);
 }
 
 void loop()
 {
     // write your code here
+    vTaskDelay(10000 / portTICK_PERIOD_MS);
 }
 
 
 void hardware_default_init()
 {
+    // 初始化 NVS
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
+    // 初始化串口
     uartMsgDeal.begin(UART_PROTOCOL_BAUD_RATE);
 }
 
@@ -109,7 +124,7 @@ void task_init(void* p_arg)
 {
     // 初始化 Wi-Fi
 #ifdef WIFI_ENABLED
+    wifiHandle.begin();
 #endif
-
     vTaskDelete(nullptr);
 }

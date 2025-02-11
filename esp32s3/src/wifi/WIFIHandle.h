@@ -8,11 +8,8 @@
 #pragma once
 #include <WiFi.h>
 #include <WebServer.h>
-#include <SPIFFS.h>
-#include <ArduinoJson.h>
 
 #define MAX_RETRIES 3
-#define CREDENTIALS_FILE "/wifi_config.json"
 
 class WIFIHandle {
 public:
@@ -24,6 +21,11 @@ public:
     void saveCredentials(const String& ssid, const String& password); // 存储Wi-Fi凭据
 
 private:
+    static const char* NVS_NAMESPACE;
+    static const char* SSID_KEY;
+    static const char* PASS_KEY;
+    static const char* COUNT_KEY;
+
     struct WifiCredential {
         String ssid;
         String password;
@@ -31,7 +33,8 @@ private:
 
     WebServer server;
     bool apMode = false;
-    JsonDocument credentials;
+
+    std::vector<WifiCredential> credentials;
 
     bool tryConnect(const String& ssid, const String& password); // 尝试连接指定的SSID
     void loadCredentials(); // 从存储中加载SSID和password
